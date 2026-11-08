@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://rolldown.rs/
 TERMUX_PKG_DESCRIPTION="Fast JavaScript/TypeScript bundler in Rust with Rollup-compatible API"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="1.2.15"
+TERMUX_PKG_VERSION="1.3.0"
 TERMUX_PKG_SRCURL=https://github.com/rolldown/rolldown/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=a154712d29f96aa38794b5c71e4a3ed5ef5a798c450cfb49fdd7e5effcb8cbb4
+TERMUX_PKG_SHA256=ca08aa1fe5a2b1c0ccf9c31208643d1349f52167713cfc60b0cfc64797dc1c32
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="nodejs | nodejs-lts, yuku"
@@ -17,7 +17,7 @@ termux_step_pre_configure() {
 	# Bypasses CMake NDK auto-detection for Rust's cmake crate during cross-compilation
 	if [[ "$TERMUX_ON_DEVICE_BUILD" == "false" ]]; then
 		export TARGET_CMAKE_TOOLCHAIN_FILE="${TERMUX_PKG_BUILDDIR}/android.toolchain.cmake"
-		touch "${TARGET_CMAKE_TOOLCHAIN_FILE}"
+		echo 'set(MI_PROFILE OFF CACHE STRING "")' > "${TARGET_CMAKE_TOOLCHAIN_FILE}"
 	fi
 
 	# Fix runtime dlopen error: cannot locate symbol "__atomic_load" on 32-bit architectures
@@ -50,7 +50,7 @@ termux_step_make() {
 	cp "target/$CARGO_TARGET_NAME/release/librolldown_binding.so" "packages/rolldown/dist/shared/rolldown-binding.android-$NAPI_ARCH.node"
 
 	# Install host native binding so the JS build runner can execute on the build host
-	npx --yes pnpm add -w --ignore-scripts @rolldown/binding-linux-x64-gnu
+	npx --yes pnpm add -w --ignore-scripts @rolldown/binding-linux-x64-gnu@"${TERMUX_PKG_VERSION}"
 
 	# Stub defineConfig in vite.config.ts to avoid loading vite-plus
 	sed -i "s/import { defineConfig } from 'vite-plus';/export const defineConfig = (config) => config;/g" vite.config.ts
@@ -69,6 +69,7 @@ termux_step_make() {
 
 	# Replace deployed yuku dependencies with symlinks to the system prefix
 	rm -rf packages/rolldown-deploy/node_modules/yuku-codegen packages/rolldown-deploy/node_modules/yuku-parser
+	rm -rf packages/rolldown-deploy/node_modules/.pnpm/yuku-* packages/rolldown-deploy/node_modules/.pnpm/@yuku-toolchain+*
 	ln -sf "$TERMUX_PREFIX/lib/node_modules/yuku-codegen" packages/rolldown-deploy/node_modules/yuku-codegen
 	ln -sf "$TERMUX_PREFIX/lib/node_modules/yuku-parser" packages/rolldown-deploy/node_modules/yuku-parser
 }

@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://writewithharper.com/
 TERMUX_PKG_DESCRIPTION="Offline, privacy-first grammar checker. Fast, open-source, Rust-powered"
 TERMUX_PKG_LICENSE="Apache-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="2.13.0"
+TERMUX_PKG_VERSION="3.1.0"
 TERMUX_PKG_SRCURL="https://github.com/Automattic/harper/archive/refs/tags/v${TERMUX_PKG_VERSION}.tar.gz"
-TERMUX_PKG_SHA256=c2576a84a81019399095eb1bdbd0b66a32a1dba780ff1dea2b3d083e8b20626e
+TERMUX_PKG_SHA256=c8f1c96401a5f5664d36b7d7babebc5ca6e14b318146c27e918d4e9ee950b133
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_BUILD_IN_SRC=true
 
